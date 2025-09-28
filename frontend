@@ -1,0 +1,2013 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAI - App Fitness com IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .smooth-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+        
+        .bottom-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .workout-timer {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        }
+        
+        .nutrition-card {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        }
+        
+        .progress-card {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- App Container -->
+    <div id="app" class="max-w-md mx-auto bg-white min-h-screen relative overflow-hidden">
+        
+        <!-- Onboarding Screen -->
+        <div id="onboarding" class="screen active gradient-bg text-white p-6 min-h-screen flex flex-col justify-center">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold mb-2">FitAI</h1>
+                <p class="text-lg opacity-90">Seu personal trainer com IA</p>
+            </div>
+            
+            <div class="space-y-4 mb-8">
+                <div class="glass-effect rounded-2xl p-4">
+                    <h3 class="font-semibold mb-2">🎯 Treinos Personalizados</h3>
+                    <p class="text-sm opacity-80">IA adapta exercícios ao seu nível e objetivos</p>
+                </div>
+                <div class="glass-effect rounded-2xl p-4">
+                    <h3 class="font-semibold mb-2">🥗 Nutrição Inteligente</h3>
+                    <p class="text-sm opacity-80">Planos alimentares baseados em suas metas</p>
+                </div>
+                <div class="glass-effect rounded-2xl p-4">
+                    <h3 class="font-semibold mb-2">📊 Progresso em Tempo Real</h3>
+                    <p class="text-sm opacity-80">Acompanhe sua evolução com análise por IA</p>
+                </div>
+            </div>
+            
+            <button onclick="startOnboarding()" class="w-full bg-white text-purple-600 font-semibold py-4 rounded-2xl smooth-transition hover:bg-gray-100">
+                Começar Jornada
+            </button>
+        </div>
+
+        <!-- Onboarding Questions -->
+        <div id="onboarding-questions" class="screen bg-white p-6 min-h-screen">
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="goBack()" class="p-2 rounded-full hover:bg-gray-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div class="flex-1 bg-gray-200 rounded-full h-2 mx-4">
+                        <div id="progress-bar" class="bg-purple-600 h-2 rounded-full transition-all duration-500" style="width: 20%"></div>
+                    </div>
+                    <span id="question-counter" class="text-sm text-gray-500">1/5</span>
+                </div>
+            </div>
+            
+            <div id="question-content" class="fade-in">
+                <h2 class="text-2xl font-bold mb-2">Qual é seu principal objetivo?</h2>
+                <p class="text-gray-600 mb-8">Isso nos ajuda a personalizar seu plano</p>
+                
+                <div class="space-y-3">
+                    <button onclick="selectOption('weight-loss')" class="option-btn w-full p-4 border-2 border-gray-200 rounded-2xl text-left hover:border-purple-500 smooth-transition">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">⚖️</span>
+                            <div>
+                                <div class="font-semibold">Perder Peso</div>
+                                <div class="text-sm text-gray-500">Foco em queima de gordura</div>
+                            </div>
+                        </div>
+                    </button>
+                    
+                    <button onclick="selectOption('muscle-gain')" class="option-btn w-full p-4 border-2 border-gray-200 rounded-2xl text-left hover:border-purple-500 smooth-transition">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">💪</span>
+                            <div>
+                                <div class="font-semibold">Ganhar Massa</div>
+                                <div class="text-sm text-gray-500">Hipertrofia muscular</div>
+                            </div>
+                        </div>
+                    </button>
+                    
+                    <button onclick="selectOption('health')" class="option-btn w-full p-4 border-2 border-gray-200 rounded-2xl text-left hover:border-purple-500 smooth-transition">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">❤️</span>
+                            <div>
+                                <div class="font-semibold">Saúde Geral</div>
+                                <div class="text-sm text-gray-500">Bem-estar e qualidade de vida</div>
+                            </div>
+                        </div>
+                    </button>
+                    
+                    <button onclick="selectOption('pain-relief')" class="option-btn w-full p-4 border-2 border-gray-200 rounded-2xl text-left hover:border-purple-500 smooth-transition">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">🩹</span>
+                            <div>
+                                <div class="font-semibold">Alívio de Dores</div>
+                                <div class="text-sm text-gray-500">Exercícios terapêuticos</div>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home Dashboard -->
+        <div id="home" class="screen bg-gray-50 pb-20">
+            <!-- Header -->
+            <div class="gradient-bg text-white p-6 rounded-b-3xl">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold">Olá, Maria! 👋</h1>
+                        <p class="opacity-90">Pronta para treinar hoje?</p>
+                    </div>
+                    <button class="p-2 rounded-full glass-effect">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4 19h5v-5l-5 5z"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Balanço Calórico Principal -->
+                <div class="glass-effect rounded-2xl p-6 mb-4">
+                    <h3 class="text-lg font-bold mb-4 opacity-90">Balanço Calórico Hoje</h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-center">
+                            <p class="text-sm opacity-80">Ingeridas</p>
+                            <p class="text-2xl font-bold text-green-300">1,247</p>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-3xl">⚖️</span>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm opacity-80">Gastas</p>
+                            <p class="text-2xl font-bold text-orange-300">1,580</p>
+                        </div>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-full h-3 mb-2">
+                        <div class="bg-gradient-to-r from-green-400 to-orange-400 h-3 rounded-full" style="width: 79%"></div>
+                    </div>
+                    <p class="text-center text-sm opacity-90">Déficit: <span class="font-bold text-green-300">-333 kcal</span></p>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="glass-effect rounded-2xl p-4">
+                        <div class="text-center">
+                            <p class="text-sm opacity-80">Passos</p>
+                            <p class="text-lg font-bold">8,247</p>
+                            <div class="w-full bg-white bg-opacity-20 rounded-full h-1 mt-2">
+                                <div class="bg-white h-1 rounded-full" style="width: 82%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-effect rounded-2xl p-4">
+                        <div class="text-center">
+                            <p class="text-sm opacity-80">Água</p>
+                            <p class="text-lg font-bold">1.8L</p>
+                            <div class="w-full bg-white bg-opacity-20 rounded-full h-1 mt-2">
+                                <div class="bg-white h-1 rounded-full" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-effect rounded-2xl p-4">
+                        <div class="text-center">
+                            <p class="text-sm opacity-80">Pontos</p>
+                            <p class="text-lg font-bold">1,250</p>
+                            <span class="text-xs opacity-80">⭐</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="p-6 space-y-6">
+                <!-- Today's Workout -->
+                <div class="bg-white rounded-2xl p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold">Treino de Hoje - Treino A</h3>
+                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Pernas</span>
+                    </div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-gray-600 mb-2">45 min • 8 exercícios</p>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                <span class="text-sm text-gray-500">Iniciante</span>
+                            </div>
+                        </div>
+                        <button onclick="showScreen('workout')" class="bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-purple-700 smooth-transition">
+                            Iniciar
+                        </button>
+                    </div>
+                    
+                    <!-- Weekly Schedule -->
+                    <div class="border-t pt-4">
+                        <p class="text-sm font-medium text-gray-700 mb-3">Cronograma da Semana</p>
+                        <div class="flex space-x-2">
+                            <div class="flex-1 text-center p-2 bg-purple-100 text-purple-800 rounded-lg text-xs font-medium">
+                                SEG<br>Treino A
+                            </div>
+                            <div class="flex-1 text-center p-2 bg-gray-100 text-gray-600 rounded-lg text-xs">
+                                TER<br>Descanso
+                            </div>
+                            <div class="flex-1 text-center p-2 bg-blue-100 text-blue-800 rounded-lg text-xs font-medium">
+                                QUA<br>Treino B
+                            </div>
+                            <div class="flex-1 text-center p-2 bg-gray-100 text-gray-600 rounded-lg text-xs">
+                                QUI<br>Descanso
+                            </div>
+                            <div class="flex-1 text-center p-2 bg-green-100 text-green-800 rounded-lg text-xs font-medium">
+                                SEX<br>Treino C
+                            </div>
+                            <div class="flex-1 text-center p-2 bg-gray-100 text-gray-600 rounded-lg text-xs">
+                                SAB<br>Descanso
+                            </div>
+                            <div class="flex-1 text-center p-2 bg-gray-100 text-gray-600 rounded-lg text-xs">
+                                DOM<br>Descanso
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="showScreen('nutrition')" class="nutrition-card text-white p-6 rounded-2xl card-hover">
+                        <div class="text-2xl mb-2">🥗</div>
+                        <div class="font-semibold">Nutrição</div>
+                        <div class="text-sm opacity-90">Plano do dia</div>
+                    </button>
+                    
+                    <button onclick="showScreen('progress')" class="progress-card text-gray-800 p-6 rounded-2xl card-hover">
+                        <div class="text-2xl mb-2">📊</div>
+                        <div class="font-semibold">Progresso</div>
+                        <div class="text-sm opacity-75">Ver evolução</div>
+                    </button>
+                </div>
+                
+                <!-- Achievements -->
+                <div class="bg-white rounded-2xl p-6">
+                    <h3 class="text-lg font-bold mb-4">Conquistas Recentes</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
+                                <span class="text-lg">🏆</span>
+                            </div>
+                            <div>
+                                <p class="font-semibold">7 dias consecutivos</p>
+                                <p class="text-sm text-gray-500">Parabéns pela consistência!</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                <span class="text-lg">💪</span>
+                            </div>
+                            <div>
+                                <p class="font-semibold">Meta de peso atingida</p>
+                                <p class="text-sm text-gray-500">-2kg este mês</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workout Screen -->
+        <div id="workout" class="screen bg-white">
+            <!-- Header -->
+            <div class="workout-timer text-white p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="showScreen('home')" class="p-2 rounded-full glass-effect">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div class="text-center">
+                        <h2 class="text-xl font-bold">Treino de Pernas</h2>
+                        <p class="opacity-90">Exercício 3 de 8</p>
+                    </div>
+                    <button class="p-2 rounded-full glass-effect">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Timer -->
+                <div class="text-center">
+                    <div class="text-4xl font-bold mb-2" id="timer">02:30</div>
+                    <p class="opacity-90">Descanso entre séries</p>
+                </div>
+            </div>
+            
+            <!-- Exercise Content -->
+            <div class="p-6 space-y-6">
+                <!-- Current Exercise -->
+                <div class="bg-gray-50 rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold">Agachamento Livre</h3>
+                        <button class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                            Ver Vídeo
+                        </button>
+                    </div>
+                    
+                    <!-- Exercise Video Placeholder -->
+                    <div class="bg-gray-200 rounded-xl h-48 flex items-center justify-center mb-4">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-2">
+                                <svg class="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <p class="text-gray-600">Toque para ver demonstração</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Exercise Info -->
+                    <div class="bg-blue-50 rounded-xl p-4 mb-4">
+                        <h4 class="font-semibold text-blue-900 mb-2">💡 Dica da IA</h4>
+                        <p class="text-blue-800 text-sm">Mantenha o core contraído e desça até os joelhos formarem 90°. Foque na respiração: inspire na descida, expire na subida.</p>
+                    </div>
+                    
+                    <!-- Sets -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-white rounded-xl">
+                            <span class="font-medium">Série 1</span>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-sm text-gray-500">12 reps</span>
+                                <input type="number" placeholder="Peso (kg)" class="w-20 p-2 border rounded-lg text-center text-sm">
+                                <button class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-white rounded-xl border-2 border-purple-200">
+                            <span class="font-medium text-purple-600">Série 2 (Atual)</span>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-sm text-gray-500">12 reps</span>
+                                <input type="number" placeholder="Peso (kg)" class="w-20 p-2 border-2 border-purple-300 rounded-lg text-center text-sm">
+                                <button class="w-8 h-8 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <span class="font-medium text-gray-400">Série 3</span>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-sm text-gray-400">12 reps</span>
+                                <input type="number" placeholder="Peso (kg)" class="w-20 p-2 border rounded-lg text-center text-sm" disabled>
+                                <button class="w-8 h-8 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Analysis -->
+                <div class="bg-blue-50 rounded-2xl p-6 border border-blue-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-semibold text-blue-900">🤖 Personal Trainer IA</h4>
+                        <button onclick="toggleCamera()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium">
+                            Analisar Movimento
+                        </button>
+                    </div>
+                    <div id="camera-analysis" class="hidden">
+                        <div class="bg-gray-800 rounded-xl h-32 flex items-center justify-center mb-3">
+                            <span class="text-white text-sm">📹 Câmera ativa - Analisando postura...</span>
+                        </div>
+                        <div class="bg-green-100 rounded-xl p-3">
+                            <p class="text-green-800 text-sm font-medium">✅ Postura correta!</p>
+                            <p class="text-green-700 text-xs">Mantenha o core contraído e controle a descida.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mental Health Module -->
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-semibold text-indigo-900">🧠 Saúde Mental & Foco</h4>
+                        <button onclick="toggleMentalHealth()" class="text-indigo-600 text-sm font-medium">
+                            Ver Mais
+                        </button>
+                    </div>
+                    
+                    <div id="mental-health-content" class="hidden space-y-4">
+                        <!-- Mood Tracker -->
+                        <div class="bg-white rounded-xl p-4">
+                            <h5 class="font-medium text-gray-900 mb-3">Como você está se sentindo?</h5>
+                            <div class="flex justify-between">
+                                <button onclick="setMood('very-sad')" class="mood-btn flex flex-col items-center p-2 rounded-lg hover:bg-gray-50">
+                                    <span class="text-2xl mb-1">😢</span>
+                                    <span class="text-xs text-gray-600">Muito triste</span>
+                                </button>
+                                <button onclick="setMood('sad')" class="mood-btn flex flex-col items-center p-2 rounded-lg hover:bg-gray-50">
+                                    <span class="text-2xl mb-1">😔</span>
+                                    <span class="text-xs text-gray-600">Triste</span>
+                                </button>
+                                <button onclick="setMood('neutral')" class="mood-btn flex flex-col items-center p-2 rounded-lg hover:bg-gray-50">
+                                    <span class="text-2xl mb-1">😐</span>
+                                    <span class="text-xs text-gray-600">Neutro</span>
+                                </button>
+                                <button onclick="setMood('happy')" class="mood-btn flex flex-col items-center p-2 rounded-lg hover:bg-gray-50">
+                                    <span class="text-2xl mb-1">😊</span>
+                                    <span class="text-xs text-gray-600">Feliz</span>
+                                </button>
+                                <button onclick="setMood('very-happy')" class="mood-btn flex flex-col items-center p-2 rounded-lg hover:bg-gray-50">
+                                    <span class="text-2xl mb-1">😄</span>
+                                    <span class="text-xs text-gray-600">Muito feliz</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Meditation Options -->
+                        <div class="bg-white rounded-xl p-4">
+                            <h5 class="font-medium text-gray-900 mb-3">Meditações Guiadas</h5>
+                            <div class="space-y-2">
+                                <button onclick="startMeditation('pre-workout')" class="w-full flex items-center justify-between p-3 bg-blue-50 rounded-lg hover:bg-blue-100">
+                                    <div class="flex items-center">
+                                        <span class="text-lg mr-3">🎯</span>
+                                        <div class="text-left">
+                                            <p class="font-medium text-blue-900">Foco Pré-Treino</p>
+                                            <p class="text-sm text-blue-700">5 min • Concentração</p>
+                                        </div>
+                                    </div>
+                                    <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                                
+                                <button onclick="startMeditation('post-workout')" class="w-full flex items-center justify-between p-3 bg-green-50 rounded-lg hover:bg-green-100">
+                                    <div class="flex items-center">
+                                        <span class="text-lg mr-3">🧘</span>
+                                        <div class="text-left">
+                                            <p class="font-medium text-green-900">Relaxamento Pós-Treino</p>
+                                            <p class="text-sm text-green-700">8 min • Recuperação</p>
+                                        </div>
+                                    </div>
+                                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                                
+                                <button onclick="startMeditation('anxiety-control')" class="w-full flex items-center justify-between p-3 bg-purple-50 rounded-lg hover:bg-purple-100">
+                                    <div class="flex items-center">
+                                        <span class="text-lg mr-3">🌸</span>
+                                        <div class="text-left">
+                                            <p class="font-medium text-purple-900">Controle da Ansiedade</p>
+                                            <p class="text-sm text-purple-700">10 min • Anti-ansiedade</p>
+                                        </div>
+                                    </div>
+                                    <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Sleep Optimization -->
+                        <div class="bg-white rounded-xl p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <h5 class="font-medium text-gray-900">Otimização do Sono</h5>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                    Conectado
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Sono ontem</span>
+                                    <span class="font-medium">7h 23min</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Qualidade</span>
+                                    <div class="flex items-center">
+                                        <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 78%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium">78%</span>
+                                    </div>
+                                </div>
+                                <div class="bg-blue-50 rounded-lg p-3">
+                                    <p class="text-sm text-blue-900 font-medium">💡 Dica da IA</p>
+                                    <p class="text-sm text-blue-800">Você dormiu melhor nos dias que treinou pela manhã. Que tal manter esse horário?</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- AI Insights -->
+                        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4 border border-yellow-200">
+                            <h5 class="font-medium text-orange-900 mb-2">🤖 Insights da IA</h5>
+                            <p class="text-sm text-orange-800">Notei que seu humor melhora 40% nos dias de treino matinal. Seus níveis de energia também ficam mais estáveis.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Access -->
+                    <div class="flex space-x-3 mt-4">
+                        <button onclick="quickMeditation()" class="flex-1 bg-indigo-100 text-indigo-800 py-2 px-4 rounded-lg text-sm font-medium">
+                            🧘 Meditar 5min
+                        </button>
+                        <button onclick="logMood()" class="flex-1 bg-purple-100 text-purple-800 py-2 px-4 rounded-lg text-sm font-medium">
+                            😊 Registrar Humor
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="space-y-3">
+                    <div class="flex space-x-4">
+                        <button class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold">
+                            Exercício Anterior
+                        </button>
+                        <button class="flex-1 bg-purple-600 text-white py-3 rounded-xl font-semibold">
+                            Próximo Exercício
+                        </button>
+                    </div>
+                    
+                    <!-- Finish Workout Button -->
+                    <button onclick="finishWorkout()" class="w-full bg-green-600 text-white py-4 rounded-xl font-semibold text-lg">
+                        ✅ Finalizar Treino
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nutrition Screen -->
+        <div id="nutrition" class="screen bg-gray-50 pb-20">
+            <!-- Header -->
+            <div class="nutrition-card text-white p-6 rounded-b-3xl">
+                <div class="flex items-center justify-between mb-6">
+                    <button onclick="showScreen('home')" class="p-2 rounded-full glass-effect">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <h2 class="text-xl font-bold">Nutrição</h2>
+                    <button onclick="showScreen('shopping-list')" class="p-2 rounded-full glass-effect">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Daily Stats -->
+                <div class="space-y-4">
+                    <div class="text-center">
+                        <p class="text-3xl font-bold">1,847 / 2,100</p>
+                        <p class="text-sm opacity-90">Calorias</p>
+                        <div class="w-full bg-white bg-opacity-20 rounded-full h-2 mt-2">
+                            <div class="bg-white h-2 rounded-full" style="width: 88%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <p class="text-lg font-bold">125g</p>
+                            <p class="text-xs opacity-90">Proteína</p>
+                            <div class="w-full bg-white bg-opacity-20 rounded-full h-1 mt-1">
+                                <div class="bg-green-400 h-1 rounded-full" style="width: 83%"></div>
+                            </div>
+                            <p class="text-xs opacity-75">83%</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-lg font-bold">180g</p>
+                            <p class="text-xs opacity-90">Carbos</p>
+                            <div class="w-full bg-white bg-opacity-20 rounded-full h-1 mt-1">
+                                <div class="bg-blue-400 h-1 rounded-full" style="width: 72%"></div>
+                            </div>
+                            <p class="text-xs opacity-75">72%</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-lg font-bold">65g</p>
+                            <p class="text-xs opacity-90">Gorduras</p>
+                            <div class="w-full bg-white bg-opacity-20 rounded-full h-1 mt-1">
+                                <div class="bg-yellow-400 h-1 rounded-full" style="width: 87%"></div>
+                            </div>
+                            <p class="text-xs opacity-75">87%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Meals -->
+            <div class="p-6 space-y-4">
+                <!-- Breakfast -->
+                <div class="bg-white rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">🌅</span>
+                            <div>
+                                <h3 class="font-bold">Café da Manhã</h3>
+                                <p class="text-sm text-gray-500">450 kcal</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="analyzeFood()" class="bg-purple-100 text-purple-600 px-3 py-1 rounded-lg text-sm font-medium">
+                                📷 Foto
+                            </button>
+                            <button class="text-purple-600 font-medium">Adicionar</button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">🥞</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Panqueca de Aveia</p>
+                                    <p class="text-sm text-gray-500">2 unidades • 320 kcal</p>
+                                </div>
+                            </div>
+                            <button class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">🍊</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Suco de Laranja</p>
+                                    <p class="text-sm text-gray-500">200ml • 130 kcal</p>
+                                </div>
+                            </div>
+                            <button class="w-6 h-6 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lunch -->
+                <div class="bg-white rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">☀️</span>
+                            <div>
+                                <h3 class="font-bold">Almoço</h3>
+                                <p class="text-sm text-gray-500">680 kcal</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="analyzeFood()" class="bg-purple-100 text-purple-600 px-3 py-1 rounded-lg text-sm font-medium">
+                                📷 Foto
+                            </button>
+                            <button class="text-purple-600 font-medium">Adicionar</button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">🍗</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Peito de Frango Grelhado</p>
+                                    <p class="text-sm text-gray-500">150g • 280 kcal</p>
+                                </div>
+                            </div>
+                            <button class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">🥗</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Salada Mista</p>
+                                    <p class="text-sm text-gray-500">1 prato • 120 kcal</p>
+                                </div>
+                            </div>
+                            <button class="w-6 h-6 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Water Intake -->
+                <div class="bg-blue-50 rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">💧</span>
+                            <div>
+                                <h3 class="font-bold text-blue-900">Hidratação</h3>
+                                <p class="text-sm text-blue-700">1.8L de 3L</p>
+                            </div>
+                        </div>
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-xl font-medium">+250ml</button>
+                    </div>
+                    
+                    <div class="w-full bg-blue-200 rounded-full h-3">
+                        <div class="bg-blue-600 h-3 rounded-full" style="width: 60%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shopping List Screen -->
+        <div id="shopping-list" class="screen bg-white pb-20">
+            <!-- Header -->
+            <div class="bg-gray-50 p-6 border-b">
+                <div class="flex items-center justify-between">
+                    <button onclick="showScreen('nutrition')" class="p-2 rounded-full hover:bg-gray-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <h2 class="text-xl font-bold">Lista de Compras</h2>
+                    <button class="text-purple-600 font-medium">Compartilhar</button>
+                </div>
+            </div>
+            
+            <!-- Shopping List Content -->
+            <div class="p-6 space-y-6">
+                <!-- Proteins -->
+                <div>
+                    <h3 class="font-bold text-lg mb-3 flex items-center">
+                        <span class="text-2xl mr-2">🍗</span>
+                        Proteínas
+                    </h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <div class="flex items-center">
+                                <input type="checkbox" class="mr-3 w-5 h-5 text-purple-600 rounded">
+                                <span>Peito de frango - 1kg</span>
+                            </div>
+                            <span class="text-gray-500">R$ 18,90</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <div class="flex items-center">
+                                <input type="checkbox" class="mr-3 w-5 h-5 text-purple-600 rounded">
+                                <span>Ovos - 30 unidades</span>
+                            </div>
+                            <span class="text-gray-500">R$ 12,50</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Vegetables -->
+                <div>
+                    <h3 class="font-bold text-lg mb-3 flex items-center">
+                        <span class="text-2xl mr-2">🥬</span>
+                        Vegetais
+                    </h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <div class="flex items-center">
+                                <input type="checkbox" class="mr-3 w-5 h-5 text-purple-600 rounded">
+                                <span>Brócolis - 500g</span>
+                            </div>
+                            <span class="text-gray-500">R$ 4,90</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <div class="flex items-center">
+                                <input type="checkbox" class="mr-3 w-5 h-5 text-purple-600 rounded">
+                                <span>Alface - 1 pé</span>
+                            </div>
+                            <span class="text-gray-500">R$ 2,50</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Supplements -->
+                <div>
+                    <h3 class="font-bold text-lg mb-3 flex items-center">
+                        <span class="text-2xl mr-2">💊</span>
+                        Suplementos
+                    </h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 bg-purple-50 rounded-xl border border-purple-200">
+                            <div class="flex items-center">
+                                <input type="checkbox" class="mr-3 w-5 h-5 text-purple-600 rounded">
+                                <div>
+                                    <span class="font-medium">Whey Protein</span>
+                                    <p class="text-sm text-purple-600">Recomendado pela IA</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-gray-500 line-through text-sm">R$ 89,90</span>
+                                <p class="text-purple-600 font-bold">R$ 71,92</p>
+                                <p class="text-xs text-purple-600">20% OFF</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Total -->
+                <div class="bg-purple-50 rounded-2xl p-6 border border-purple-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="font-bold text-lg">Total Estimado</span>
+                        <span class="font-bold text-2xl text-purple-600">R$ 110,72</span>
+                    </div>
+                    
+                    <!-- Delivery Options -->
+                    <div class="space-y-3 mb-4">
+                        <button class="w-full bg-red-500 text-white py-3 rounded-xl font-semibold flex items-center justify-center">
+                            <span class="mr-2">🛵</span>
+                            Pedir no iFood Mercado
+                        </button>
+                        <button class="w-full bg-orange-500 text-white py-3 rounded-xl font-semibold flex items-center justify-center">
+                            <span class="mr-2">🛒</span>
+                            Pedir no Rappi
+                        </button>
+                        <button class="w-full bg-purple-600 text-white py-3 rounded-xl font-semibold">
+                            Comprar em Outro Local
+                        </button>
+                    </div>
+                    
+                    <p class="text-xs text-purple-700 text-center">
+                        💡 Ganhe 50 pontos ao completar suas compras!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Screen -->
+        <div id="progress" class="screen bg-gray-50 pb-20">
+            <!-- Header -->
+            <div class="progress-card text-gray-800 p-6 rounded-b-3xl">
+                <div class="flex items-center justify-between mb-6">
+                    <button onclick="showScreen('home')" class="p-2 rounded-full bg-white bg-opacity-20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <h2 class="text-xl font-bold">Seu Progresso</h2>
+                    <button class="p-2 rounded-full bg-white bg-opacity-20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Progress Stats -->
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="text-center">
+                        <p class="text-2xl font-bold">-3.2kg</p>
+                        <p class="text-sm opacity-75">Este mês</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-2xl font-bold">85%</p>
+                        <p class="text-sm opacity-75">Meta atingida</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-2xl font-bold">28</p>
+                        <p class="text-sm opacity-75">Dias ativos</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progress Content -->
+            <div class="p-6 space-y-6">
+                <!-- Weight Chart -->
+                <div class="bg-white rounded-2xl p-6">
+                    <h3 class="font-bold text-lg mb-4">Evolução do Peso</h3>
+                    <div class="h-48 bg-gray-50 rounded-xl flex items-center justify-center">
+                        <div class="text-center">
+                            <svg class="w-16 h-16 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            <p class="text-gray-500">Gráfico de evolução</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Body Measurements -->
+                <div class="bg-white rounded-2xl p-6">
+                    <h3 class="font-bold text-lg mb-4">Medidas Corporais</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Cintura</span>
+                            <div class="text-right">
+                                <span class="font-bold">78 cm</span>
+                                <span class="text-green-600 text-sm ml-2">-2cm</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Quadril</span>
+                            <div class="text-right">
+                                <span class="font-bold">95 cm</span>
+                                <span class="text-green-600 text-sm ml-2">-1cm</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Braço</span>
+                            <div class="text-right">
+                                <span class="font-bold">32 cm</span>
+                                <span class="text-blue-600 text-sm ml-2">+1cm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Progress Photos -->
+                <div class="bg-white rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-lg">Fotos de Progresso</h3>
+                        <button class="bg-purple-600 text-white px-4 py-2 rounded-xl font-medium">
+                            Adicionar Foto
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="aspect-square bg-gray-100 rounded-xl flex items-center justify-center">
+                            <div class="text-center">
+                                <svg class="w-8 h-8 text-gray-400 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                <p class="text-xs text-gray-500">Frente</p>
+                            </div>
+                        </div>
+                        <div class="aspect-square bg-gray-100 rounded-xl flex items-center justify-center">
+                            <div class="text-center">
+                                <svg class="w-8 h-8 text-gray-400 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                <p class="text-xs text-gray-500">Lado</p>
+                            </div>
+                        </div>
+                        <div class="aspect-square bg-gray-100 rounded-xl flex items-center justify-center">
+                            <div class="text-center">
+                                <svg class="w-8 h-8 text-gray-400 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                <p class="text-xs text-gray-500">Costas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Analysis -->
+                <div class="bg-blue-50 rounded-2xl p-6 border border-blue-200">
+                    <h3 class="font-bold text-lg mb-4 text-blue-900">🤖 Análise da IA</h3>
+                    <div class="space-y-3">
+                        <div class="bg-white rounded-xl p-4">
+                            <p class="font-medium text-blue-900 mb-1">Excelente progresso!</p>
+                            <p class="text-blue-800 text-sm">Você perdeu 3.2kg este mês mantendo massa muscular. Continue com o plano atual.</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4">
+                            <p class="font-medium text-blue-900 mb-1">Próxima meta</p>
+                            <p class="text-blue-800 text-sm">Foque em exercícios para glúteos para equilibrar as proporções corporais.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md">
+            <div class="flex justify-around py-3">
+                <button onclick="showScreen('home')" class="nav-btn flex flex-col items-center p-2 rounded-xl smooth-transition">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    <span class="text-xs">Home</span>
+                </button>
+                
+                <button onclick="showScreen('workout')" class="nav-btn flex flex-col items-center p-2 rounded-xl smooth-transition">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <span class="text-xs">Treino</span>
+                </button>
+                
+                <button onclick="showScreen('nutrition')" class="nav-btn flex flex-col items-center p-2 rounded-xl smooth-transition">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+                    </svg>
+                    <span class="text-xs">Nutrição</span>
+                </button>
+                
+                <button onclick="showScreen('progress')" class="nav-btn flex flex-col items-center p-2 rounded-xl smooth-transition">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    <span class="text-xs">Progresso</span>
+                </button>
+                
+                <button onclick="showScreen('library')" class="nav-btn flex flex-col items-center p-2 rounded-xl smooth-transition">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span class="text-xs">Biblioteca</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Meditation Screen -->
+        <div id="meditation" class="screen bg-gradient-to-b from-indigo-900 to-purple-900 text-white min-h-screen">
+            <!-- Header -->
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-8">
+                    <button onclick="showScreen('workout')" class="p-2 rounded-full bg-white bg-opacity-20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <h2 class="text-xl font-bold">Meditação Guiada</h2>
+                    <button class="p-2 rounded-full bg-white bg-opacity-20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Meditation Info -->
+                <div class="text-center mb-8">
+                    <div class="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-4xl">🧘</span>
+                    </div>
+                    <h3 id="meditation-title" class="text-2xl font-bold mb-2">Foco Pré-Treino</h3>
+                    <p id="meditation-description" class="opacity-90">Prepare sua mente para um treino focado e eficiente</p>
+                </div>
+                
+                <!-- Timer Circle -->
+                <div class="flex justify-center mb-8">
+                    <div class="relative w-48 h-48">
+                        <svg class="w-48 h-48 transform -rotate-90" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none"/>
+                            <circle id="meditation-progress" cx="50" cy="50" r="45" stroke="white" stroke-width="3" fill="none" 
+                                    stroke-dasharray="283" stroke-dashoffset="283" class="transition-all duration-1000"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="text-center">
+                                <div id="meditation-timer" class="text-4xl font-bold">05:00</div>
+                                <div class="text-sm opacity-75">minutos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Meditation Controls -->
+                <div class="space-y-6">
+                    <!-- Play/Pause Button -->
+                    <div class="flex justify-center">
+                        <button id="meditation-play-btn" onclick="toggleMeditationPlay()" class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition-all">
+                            <svg id="play-icon" class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                            </svg>
+                            <svg id="pause-icon" class="w-8 h-8 hidden" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Meditation Instructions -->
+                    <div id="meditation-instructions" class="bg-white bg-opacity-10 rounded-2xl p-6">
+                        <h4 class="font-semibold mb-3">Instruções</h4>
+                        <div id="instruction-text" class="space-y-2 text-sm opacity-90">
+                            <p>• Encontre uma posição confortável</p>
+                            <p>• Feche os olhos suavemente</p>
+                            <p>• Respire naturalmente</p>
+                            <p>• Foque na sua respiração</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Breathing Guide -->
+                    <div class="bg-white bg-opacity-10 rounded-2xl p-6">
+                        <h4 class="font-semibold mb-4">Guia de Respiração</h4>
+                        <div class="flex items-center justify-center">
+                            <div id="breathing-circle" class="w-20 h-20 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
+                                <div class="w-12 h-12 bg-white bg-opacity-50 rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+                        <p id="breathing-text" class="text-center mt-4 text-sm opacity-90">Inspire... Expire...</p>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="flex space-x-4">
+                        <button onclick="skipMeditation()" class="flex-1 bg-white bg-opacity-20 py-3 rounded-xl font-medium">
+                            Pular
+                        </button>
+                        <button onclick="extendMeditation()" class="flex-1 bg-white bg-opacity-20 py-3 rounded-xl font-medium">
+                            +2 min
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mood Diary Screen -->
+        <div id="mood-diary" class="screen bg-gray-50 pb-20">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 rounded-b-3xl">
+                <div class="flex items-center justify-between mb-6">
+                    <button onclick="showScreen('workout')" class="p-2 rounded-full bg-white bg-opacity-20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <h2 class="text-xl font-bold">Diário de Humor</h2>
+                    <button class="p-2 rounded-full bg-white bg-opacity-20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Today's Mood -->
+                <div class="text-center">
+                    <h3 class="text-lg font-bold mb-2">Como você está hoje?</h3>
+                    <div class="flex justify-center space-x-4 mb-4">
+                        <button onclick="setTodayMood('very-sad')" class="mood-selector p-3 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30">
+                            <span class="text-2xl">😢</span>
+                        </button>
+                        <button onclick="setTodayMood('sad')" class="mood-selector p-3 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30">
+                            <span class="text-2xl">😔</span>
+                        </button>
+                        <button onclick="setTodayMood('neutral')" class="mood-selector p-3 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30">
+                            <span class="text-2xl">😐</span>
+                        </button>
+                        <button onclick="setTodayMood('happy')" class="mood-selector p-3 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30">
+                            <span class="text-2xl">😊</span>
+                        </button>
+                        <button onclick="setTodayMood('very-happy')" class="mood-selector p-3 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30">
+                            <span class="text-2xl">😄</span>
+                        </button>
+                    </div>
+                    <p id="mood-status" class="opacity-90">Toque em um emoji para registrar</p>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 space-y-6">
+                <!-- Mood Chart -->
+                <div class="bg-white rounded-2xl p-6">
+                    <h3 class="font-bold text-lg mb-4">Evolução do Humor - Últimos 7 dias</h3>
+                    <div class="h-32 bg-gray-50 rounded-xl flex items-end justify-between p-4">
+                        <div class="flex flex-col items-center">
+                            <div class="w-6 h-16 bg-yellow-400 rounded-t mb-2"></div>
+                            <span class="text-xs text-gray-500">Seg</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-6 h-20 bg-green-400 rounded-t mb-2"></div>
+                            <span class="text-xs text-gray-500">Ter</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-6 h-12 bg-orange-400 rounded-t mb-2"></div>
+                            <span class="text-xs text-gray-500">Qua</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-6 h-24 bg-green-500 rounded-t mb-2"></div>
+                            <span class="text-xs text-gray-500">Qui</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-6 h-18 bg-yellow-400 rounded-t mb-2"></div>
+                            <span class="text-xs text-gray-500">Sex</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-6 h-22 bg-green-400 rounded-t mb-2"></div>
+                            <span class="text-xs text-gray-500">Sab</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-6 h-8 bg-gray-300 rounded-t mb-2"></div>
+                            <span class="text-xs text-gray-500">Dom</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Correlations -->
+                <div class="bg-blue-50 rounded-2xl p-6 border border-blue-200">
+                    <h3 class="font-bold text-lg mb-4 text-blue-900">🤖 Correlações da IA</h3>
+                    <div class="space-y-4">
+                        <div class="bg-white rounded-xl p-4">
+                            <div class="flex items-center mb-2">
+                                <span class="text-lg mr-2">🌅</span>
+                                <span class="font-medium text-blue-900">Treino Matinal</span>
+                            </div>
+                            <p class="text-sm text-blue-800">Seu humor melhora 40% nos dias que você treina pela manhã. Considere manter esse horário!</p>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl p-4">
+                            <div class="flex items-center mb-2">
+                                <span class="text-lg mr-2">😴</span>
+                                <span class="font-medium text-blue-900">Qualidade do Sono</span>
+                            </div>
+                            <p class="text-sm text-blue-800">Noites com mais de 7h de sono resultam em humor 25% melhor no dia seguinte.</p>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl p-4">
+                            <div class="flex items-center mb-2">
+                                <span class="text-lg mr-2">🥗</span>
+                                <span class="font-medium text-blue-900">Alimentação</span>
+                            </div>
+                            <p class="text-sm text-blue-800">Dias com café da manhã rico em proteínas estão associados a humor mais estável.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mood Notes -->
+                <div class="bg-white rounded-2xl p-6">
+                    <h3 class="font-bold text-lg mb-4">Anotações do Dia</h3>
+                    <textarea placeholder="Como foi seu dia? O que influenciou seu humor?" 
+                              class="w-full h-24 p-4 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+                    <button class="mt-3 bg-purple-600 text-white px-6 py-2 rounded-xl font-medium">
+                        Salvar Anotação
+                    </button>
+                </div>
+                
+                <!-- Mood History -->
+                <div class="bg-white rounded-2xl p-6">
+                    <h3 class="font-bold text-lg mb-4">Histórico Recente</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">😊</span>
+                                <div>
+                                    <p class="font-medium">Ontem</p>
+                                    <p class="text-sm text-gray-500">Treino matinal + boa alimentação</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-gray-400">19:30</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">😐</span>
+                                <div>
+                                    <p class="font-medium">Anteontem</p>
+                                    <p class="text-sm text-gray-500">Dia corrido, pouco sono</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-gray-400">20:15</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">😄</span>
+                                <div>
+                                    <p class="font-medium">3 dias atrás</p>
+                                    <p class="text-sm text-gray-500">Treino incrível + meditação</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-gray-400">18:45</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Library Screen -->
+        <div id="library" class="screen bg-gray-50 pb-20">
+            <!-- Header -->
+            <div class="bg-white p-6 border-b">
+                <h2 class="text-2xl font-bold">Biblioteca</h2>
+                <p class="text-gray-600">Guias e conteúdos personalizados</p>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 space-y-6">
+                <!-- Featured Content -->
+                <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl p-6">
+                    <h3 class="text-xl font-bold mb-2">Novo Guia Disponível!</h3>
+                    <p class="mb-4 opacity-90">Receitas Fit para Ganho de Massa</p>
+                    <button class="bg-white text-purple-600 px-6 py-2 rounded-xl font-semibold">
+                        Baixar Agora
+                    </button>
+                </div>
+                
+                <!-- Categories -->
+                <div class="space-y-4">
+                    <div class="bg-white rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">🛒</span>
+                                <div>
+                                    <h3 class="font-bold">Loja de Suplementos</h3>
+                                    <p class="text-sm text-gray-500">Produtos recomendados pela IA</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="bg-red-100 text-red-600 px-2 py-1 rounded-full text-xs font-bold mr-2">20% OFF</span>
+                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">📚</span>
+                                <div>
+                                    <h3 class="font-bold">Guias de Treino</h3>
+                                    <p class="text-sm text-gray-500">5 guias disponíveis</p>
+                                </div>
+                            </div>
+                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">🍽️</span>
+                                <div>
+                                    <h3 class="font-bold">Receitas Fit</h3>
+                                    <p class="text-sm text-gray-500">12 receitas personalizadas</p>
+                                </div>
+                            </div>
+                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">🧘</span>
+                                <div>
+                                    <h3 class="font-bold">Bem-estar</h3>
+                                    <p class="text-sm text-gray-500">Meditação e relaxamento</p>
+                                </div>
+                            </div>
+                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- Points System -->
+                    <div class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-lg">Seus Pontos FitAI</h3>
+                                <p class="text-sm opacity-90">Use para descontos na loja</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-2xl font-bold">1,250</p>
+                                <p class="text-sm opacity-90">pontos</p>
+                            </div>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-xl p-3">
+                            <p class="text-sm font-medium">💡 Como ganhar mais pontos:</p>
+                            <ul class="text-xs mt-2 space-y-1 opacity-90">
+                                <li>• Finalizar treino: +100 pontos</li>
+                                <li>• Atingir meta nutricional: +50 pontos</li>
+                                <li>• Check-in diário: +25 pontos</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App State Management
+        let currentScreen = 'onboarding';
+        let onboardingStep = 1;
+        let selectedGoal = null;
+        let timerInterval = null;
+        let timerSeconds = 150; // 2:30
+
+        // Screen Management
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+                screen.style.display = 'none';
+            });
+            
+            // Show target screen
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.style.display = 'block';
+                targetScreen.classList.add('active');
+                currentScreen = screenId;
+                
+                // Add fade-in animation
+                targetScreen.classList.add('fade-in');
+                setTimeout(() => {
+                    targetScreen.classList.remove('fade-in');
+                }, 500);
+                
+                // Update navigation
+                updateNavigation();
+                
+                // Start timer if workout screen
+                if (screenId === 'workout') {
+                    startTimer();
+                }
+            }
+        }
+
+        // Navigation Update
+        function updateNavigation() {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-purple-600', 'bg-purple-100');
+                btn.classList.add('text-gray-500');
+            });
+            
+            // Highlight active nav item
+            const activeNavMap = {
+                'home': 0,
+                'workout': 1,
+                'nutrition': 2,
+                'progress': 3,
+                'library': 4
+            };
+            
+            const activeIndex = activeNavMap[currentScreen];
+            if (activeIndex !== undefined) {
+                const navBtns = document.querySelectorAll('.nav-btn');
+                if (navBtns[activeIndex]) {
+                    navBtns[activeIndex].classList.add('text-purple-600', 'bg-purple-100');
+                    navBtns[activeIndex].classList.remove('text-gray-500');
+                }
+            }
+        }
+
+        // Onboarding Functions
+        function startOnboarding() {
+            showScreen('onboarding-questions');
+        }
+
+        function selectOption(option) {
+            selectedGoal = option;
+            
+            // Visual feedback
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('border-purple-500', 'bg-purple-50');
+            });
+            
+            event.target.closest('.option-btn').classList.add('border-purple-500', 'bg-purple-50');
+            
+            // Continue to next question after delay
+            setTimeout(() => {
+                nextQuestion();
+            }, 800);
+        }
+
+        function nextQuestion() {
+            onboardingStep++;
+            
+            if (onboardingStep > 5) {
+                // Complete onboarding
+                completeOnboarding();
+                return;
+            }
+            
+            // Update progress
+            const progress = (onboardingStep / 5) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            document.getElementById('question-counter').textContent = `${onboardingStep}/5`;
+            
+            // Update question content (simplified for demo)
+            const questions = [
+                {
+                    title: "Qual é seu nível atual?",
+                    subtitle: "Isso nos ajuda a ajustar a intensidade",
+                    options: [
+                        { id: 'beginner', icon: '🌱', title: 'Iniciante', subtitle: 'Pouca ou nenhuma experiência' },
+                        { id: 'intermediate', icon: '💪', title: 'Intermediário', subtitle: 'Treino há alguns meses' },
+                        { id: 'advanced', icon: '🏆', title: 'Avançado', subtitle: 'Treino há mais de 1 ano' }
+                    ]
+                },
+                {
+                    title: "Quantos dias por semana pode treinar?",
+                    subtitle: "Vamos criar um cronograma realista",
+                    options: [
+                        { id: '3days', icon: '📅', title: '3 dias', subtitle: 'Treino básico eficiente' },
+                        { id: '4days', icon: '📅', title: '4-5 dias', subtitle: 'Treino intermediário' },
+                        { id: '6days', icon: '📅', title: '6+ dias', subtitle: 'Treino intensivo' }
+                    ]
+                },
+                {
+                    title: "Tem alguma limitação física?",
+                    subtitle: "Vamos adaptar os exercícios para você",
+                    options: [
+                        { id: 'none', icon: '✅', title: 'Nenhuma', subtitle: 'Posso fazer qualquer exercício' },
+                        { id: 'back', icon: '🦴', title: 'Problemas nas costas', subtitle: 'Dores ou lesões na coluna' },
+                        { id: 'joints', icon: '🦵', title: 'Problemas articulares', subtitle: 'Joelhos, ombros, etc.' }
+                    ]
+                },
+                {
+                    title: "Qual seu foco principal?",
+                    subtitle: "Vamos personalizar sua jornada",
+                    options: [
+                        { id: 'aesthetic', icon: '💫', title: 'Estética', subtitle: 'Melhorar aparência física' },
+                        { id: 'health', icon: '❤️', title: 'Saúde', subtitle: 'Bem-estar geral' },
+                        { id: 'performance', icon: '⚡', title: 'Performance', subtitle: 'Força e resistência' }
+                    ]
+                }
+            ];
+            
+            if (onboardingStep <= questions.length + 1) {
+                const question = questions[onboardingStep - 2];
+                updateQuestionContent(question);
+            }
+        }
+
+        function updateQuestionContent(question) {
+            const content = document.getElementById('question-content');
+            content.innerHTML = `
+                <h2 class="text-2xl font-bold mb-2">${question.title}</h2>
+                <p class="text-gray-600 mb-8">${question.subtitle}</p>
+                
+                <div class="space-y-3">
+                    ${question.options.map(option => `
+                        <button onclick="selectOption('${option.id}')" class="option-btn w-full p-4 border-2 border-gray-200 rounded-2xl text-left hover:border-purple-500 smooth-transition">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">${option.icon}</span>
+                                <div>
+                                    <div class="font-semibold">${option.title}</div>
+                                    <div class="text-sm text-gray-500">${option.subtitle}</div>
+                                </div>
+                            </div>
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            content.classList.add('fade-in');
+        }
+
+        function completeOnboarding() {
+            // Show completion message
+            const content = document.getElementById('question-content');
+            content.innerHTML = `
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-4">Perfeito! 🎉</h2>
+                    <p class="text-gray-600 mb-8">Sua IA está criando um plano personalizado baseado nas suas respostas.</p>
+                    <div class="bg-purple-50 rounded-2xl p-6 mb-8">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="w-8 h-8 bg-purple-600 rounded-full animate-pulse mr-3"></div>
+                            <span class="font-semibold text-purple-900">IA processando...</span>
+                        </div>
+                        <div class="w-full bg-purple-200 rounded-full h-2">
+                            <div class="bg-purple-600 h-2 rounded-full animate-pulse" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Auto-redirect to home after 3 seconds
+            setTimeout(() => {
+                showScreen('home');
+            }, 3000);
+        }
+
+        function goBack() {
+            if (onboardingStep > 1) {
+                onboardingStep--;
+                const progress = (onboardingStep / 5) * 100;
+                document.getElementById('progress-bar').style.width = progress + '%';
+                document.getElementById('question-counter').textContent = `${onboardingStep}/5`;
+                // Update question content accordingly
+            } else {
+                showScreen('onboarding');
+            }
+        }
+
+        // Timer Functions
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+                
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    // Timer finished - could show notification
+                    timerSeconds = 150; // Reset
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const timerElement = document.getElementById('timer');
+            if (timerElement) {
+                timerElement.textContent = display;
+            }
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show onboarding by default
+            showScreen('onboarding');
+            
+            // Add click handlers for interactive elements
+            document.addEventListener('click', function(e) {
+                // Handle checkbox interactions
+                if (e.target.type === 'checkbox') {
+                    e.target.closest('.rounded-xl').classList.toggle('bg-green-50');
+                }
+                
+                // Handle water intake button
+                if (e.target.textContent === '+250ml') {
+                    // Update water progress (simplified)
+                    const progressBar = e.target.closest('.bg-blue-50').querySelector('.bg-blue-600');
+                    const currentWidth = parseInt(progressBar.style.width) || 60;
+                    const newWidth = Math.min(currentWidth + 8, 100);
+                    progressBar.style.width = newWidth + '%';
+                    
+                    // Update text
+                    const waterText = e.target.closest('.bg-blue-50').querySelector('.text-blue-700');
+                    const currentLiters = parseFloat(waterText.textContent.match(/[\d.]+/)[0]);
+                    const newLiters = Math.min(currentLiters + 0.25, 3.0);
+                    waterText.textContent = `${newLiters.toFixed(1)}L de 3L`;
+                }
+            });
+            
+            // Add smooth scrolling
+            document.documentElement.style.scrollBehavior = 'smooth';
+        });
+
+        // Mental Health Functions
+        let meditationTimer = null;
+        let meditationSeconds = 300; // 5 minutes
+        let isPlaying = false;
+        let currentMood = null;
+
+        function toggleMentalHealth() {
+            const content = document.getElementById('mental-health-content');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                content.classList.add('fade-in');
+            } else {
+                content.classList.add('hidden');
+                content.classList.remove('fade-in');
+            }
+        }
+
+        function setMood(mood) {
+            currentMood = mood;
+            // Visual feedback
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-100', 'border-purple-300');
+            });
+            
+            event.target.closest('.mood-btn').classList.add('bg-purple-100', 'border-purple-300');
+            
+            // Show confirmation
+            const moodNames = {
+                'very-sad': 'muito triste',
+                'sad': 'triste', 
+                'neutral': 'neutro',
+                'happy': 'feliz',
+                'very-happy': 'muito feliz'
+            };
+            
+            showNotification(`Humor registrado: ${moodNames[mood]}`, 'success');
+            
+            // Add points
+            setTimeout(() => {
+                showNotification('+25 pontos por registrar seu humor!', 'success');
+            }, 1500);
+        }
+
+        function startMeditation(type) {
+            const meditations = {
+                'pre-workout': {
+                    title: 'Foco Pré-Treino',
+                    description: 'Prepare sua mente para um treino focado e eficiente',
+                    duration: 300, // 5 minutes
+                    instructions: [
+                        '• Encontre uma posição confortável',
+                        '• Feche os olhos suavemente', 
+                        '• Respire naturalmente',
+                        '• Visualize seu treino perfeito'
+                    ]
+                },
+                'post-workout': {
+                    title: 'Relaxamento Pós-Treino',
+                    description: 'Relaxe e recupere após o exercício',
+                    duration: 480, // 8 minutes
+                    instructions: [
+                        '• Deite-se confortavelmente',
+                        '• Respire profundamente',
+                        '• Relaxe cada músculo do corpo',
+                        '• Sinta a sensação de conquista'
+                    ]
+                },
+                'anxiety-control': {
+                    title: 'Controle da Ansiedade',
+                    description: 'Acalme sua mente e reduza a ansiedade',
+                    duration: 600, // 10 minutes
+                    instructions: [
+                        '• Sente-se com a coluna reta',
+                        '• Respire lenta e profundamente',
+                        '• Observe seus pensamentos sem julgamento',
+                        '• Foque no momento presente'
+                    ]
+                }
+            };
+            
+            const meditation = meditations[type];
+            if (meditation) {
+                // Update meditation screen
+                document.getElementById('meditation-title').textContent = meditation.title;
+                document.getElementById('meditation-description').textContent = meditation.description;
+                
+                const instructionText = document.getElementById('instruction-text');
+                instructionText.innerHTML = meditation.instructions.map(inst => `<p>${inst}</p>`).join('');
+                
+                meditationSeconds = meditation.duration;
+                updateMeditationTimer();
+                
+                showScreen('meditation');
+            }
+        }
+
+        function toggleMeditationPlay() {
+            const playIcon = document.getElementById('play-icon');
+            const pauseIcon = document.getElementById('pause-icon');
+            
+            if (isPlaying) {
+                // Pause
+                clearInterval(meditationTimer);
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                isPlaying = false;
+            } else {
+                // Play
+                startMeditationTimer();
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+                isPlaying = true;
+            }
+        }
+
+        function startMeditationTimer() {
+            meditationTimer = setInterval(() => {
+                meditationSeconds--;
+                updateMeditationTimer();
+                updateMeditationProgress();
+                
+                if (meditationSeconds <= 0) {
+                    completeMeditation();
+                }
+            }, 1000);
+        }
+
+        function updateMeditationTimer() {
+            const minutes = Math.floor(meditationSeconds / 60);
+            const seconds = meditationSeconds % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const timerElement = document.getElementById('meditation-timer');
+            if (timerElement) {
+                timerElement.textContent = display;
+            }
+        }
+
+        function updateMeditationProgress() {
+            const progressCircle = document.getElementById('meditation-progress');
+            if (progressCircle) {
+                const totalSeconds = 300; // Default 5 minutes
+                const progress = ((totalSeconds - meditationSeconds) / totalSeconds) * 283;
+                progressCircle.style.strokeDashoffset = 283 - progress;
+            }
+        }
+
+        function completeMeditation() {
+            clearInterval(meditationTimer);
+            isPlaying = false;
+            
+            // Reset icons
+            document.getElementById('play-icon').classList.remove('hidden');
+            document.getElementById('pause-icon').classList.add('hidden');
+            
+            // Show completion
+            showNotification('Meditação concluída! +50 pontos ganhos', 'success');
+            
+            // Auto return to workout after 3 seconds
+            setTimeout(() => {
+                showScreen('workout');
+            }, 3000);
+        }
+
+        function skipMeditation() {
+            clearInterval(meditationTimer);
+            showScreen('workout');
+        }
+
+        function extendMeditation() {
+            meditationSeconds += 120; // Add 2 minutes
+            updateMeditationTimer();
+            showNotification('Tempo estendido em 2 minutos', 'success');
+        }
+
+        function quickMeditation() {
+            startMeditation('pre-workout');
+        }
+
+        function logMood() {
+            showScreen('mood-diary');
+        }
+
+        function setTodayMood(mood) {
+            // Visual feedback
+            document.querySelectorAll('.mood-selector').forEach(btn => {
+                btn.classList.remove('bg-white', 'bg-opacity-40');
+            });
+            
+            event.target.closest('.mood-selector').classList.add('bg-white', 'bg-opacity-40');
+            
+            const moodNames = {
+                'very-sad': 'muito triste',
+                'sad': 'triste',
+                'neutral': 'neutro', 
+                'happy': 'feliz',
+                'very-happy': 'muito feliz'
+            };
+            
+            document.getElementById('mood-status').textContent = `Humor registrado: ${moodNames[mood]}`;
+            
+            // Add points
+            setTimeout(() => {
+                showNotification('+25 pontos por registrar seu humor diário!', 'success');
+            }, 1000);
+        }
+
+        // New Features Functions
+        function toggleCamera() {
+            const cameraDiv = document.getElementById('camera-analysis');
+            if (cameraDiv.classList.contains('hidden')) {
+                cameraDiv.classList.remove('hidden');
+                showNotification('Câmera ativada! Analisando movimento...', 'success');
+            } else {
+                cameraDiv.classList.add('hidden');
+                showNotification('Análise finalizada!', 'success');
+            }
+        }
+
+        function finishWorkout() {
+            // Show completion modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl p-8 mx-4 max-w-sm w-full text-center">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Parabéns! 🎉</h3>
+                    <p class="text-gray-600 mb-6">Treino finalizado com sucesso!<br>+100 pontos ganhos</p>
+                    <div class="space-y-3">
+                        <button onclick="shareWorkout()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold">
+                            📱 Compartilhar no Instagram
+                        </button>
+                        <button onclick="closeModal(); showScreen('home')" class="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold">
+                            Voltar ao Início
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function shareWorkout() {
+            showNotification('Redirecionando para Instagram Stories...', 'success');
+            // In a real app, this would open Instagram with pre-filled content
+            setTimeout(() => {
+                closeModal();
+                showScreen('home');
+            }, 2000);
+        }
+
+        function analyzeFood() {
+            showNotification('Analisando foto da refeição...', 'success');
+            // Simulate AI analysis
+            setTimeout(() => {
+                showNotification('Análise concluída! Alimentos adicionados automaticamente.', 'success');
+            }, 2000);
+        }
+
+        function closeModal() {
+            const modals = document.querySelectorAll('.fixed.inset-0');
+            modals.forEach(modal => modal.remove());
+        }
+
+        // Utility Functions
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function showNotification(message, type = 'success') {
+            // Simple notification system
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-xl text-white font-medium ${
+                type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            }`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'985f6095f32b7c00',t:'MTc1OTAyMTk5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
